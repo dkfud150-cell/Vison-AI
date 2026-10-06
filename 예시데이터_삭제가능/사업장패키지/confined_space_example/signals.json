@@ -1,0 +1,54 @@
+{
+  "signals": {
+    "confined_permit": {
+      "label": "밀폐공간 작업허가",
+      "do": "on",
+      "fact": "permit"
+    },
+    "confined_end": {
+      "label": "작업 종료",
+      "do": "off",
+      "fact": "permit"
+    },
+    "o2_test": {
+      "label": "산소 측정",
+      "do": "measure",
+      "fact": "o2",
+      "unit": "%"
+    },
+    "fan_start": {
+      "label": "송풍기 가동",
+      "do": "on",
+      "fact": "fan"
+    },
+    "fan_stop": {
+      "label": "송풍기 정지",
+      "do": "off",
+      "fact": "fan"
+    },
+    "entry": {
+      "label": "탱크 입장",
+      "do": "on",
+      "fact": "entry"
+    },
+    "exit": {
+      "label": "탱크 퇴장",
+      "do": "off",
+      "fact": "entry"
+    },
+    "watcher_on": {
+      "label": "감시인 배치",
+      "do": "on",
+      "fact": "watcher"
+    },
+    "watcher_off": {
+      "label": "감시인 이탈",
+      "do": "off",
+      "fact": "watcher"
+    },
+    "collapse": {
+      "label": "작업자 쓰러짐",
+      "do": "accident"
+    }
+  }
+}

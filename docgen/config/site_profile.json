@@ -1,0 +1,18 @@
+{
+  "_설명": "사업장 정보 — 실제 값으로 고친다. 화면(의무 이행 관리)에서 업종 · 인원을 바꾸면 대상 의무가 다시 계산된다. last_done 은 각 의무의 마지막 실시일(도입 전 기록) — 이후는 화면의 '이행 처리'가 records/compliance_done.jsonl 에 쌓는다. accidents 는 사망 또는 3일 이상 휴업 재해(산업재해조사표 대상)이고 event_ids 는 그 사고와 이어진 관제 이벤트다. 예시 데이터를 쓰는 동안은 ../예시데이터_삭제가능/문서자동화/site_profile.json 이 이 값 위에 덮인다(시연 날짜 demo_today 포함).",
+  "site_name": "산세 공장",
+  "industry": "1차 금속 제조업",
+  "industry_group": "철강",
+  "process_tags": [
+    "산세",
+    "산 재생설비",
+    "연료가스",
+    "배관 정비",
+    "대수리",
+    "맹판 격리"
+  ],
+  "workers": 320,
+  "hazardous_agents": true,
+  "last_done": {},
+  "accidents": []
+}

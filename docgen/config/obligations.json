@@ -1,0 +1,146 @@
+{
+  "_설명": "철강(1차 금속) 제조업 기준 법정 의무 일정. category 는 의무 이행 관리 화면의 필터, retention 은 그 의무가 남기는 서류의 보존 기간이다. 규모 기준(min_workers)과 주기를 바꾸면 화면이 바로 따라 바뀐다.",
+
+  "alert_days": [30, 7, 1],
+  "categories": ["문서", "점검·검사", "보고", "교육", "회의"],
+
+  "calendar": [
+    {
+      "id": "ra_regular",
+      "name": "위험성평가 정기평가",
+      "category": "문서",
+      "doc": "위험성평가 실시 결과(정기)",
+      "applies_if": {"min_workers": 1},
+      "cycle": {"type": "rolling", "months": 12},
+      "basis": "산업안전보건법 제36조 · 사업장 위험성평가에 관한 지침 제15조제3항 (1년마다 정기 재검토)",
+      "retention": "3년 — 산업안전보건법 시행규칙 제37조제2항",
+      "note": "이 시스템의 위험성평가 확정 기록(RA-...)으로 자동 완료 처리된다.",
+      "verified": true
+    },
+    {
+      "id": "sapa_half",
+      "name": "중처법 안전보건관리체계 반기 점검",
+      "category": "점검·검사",
+      "doc": "반기 점검·평가 결과 (유해·위험요인 확인·개선, 종사자 의견 청취 등)",
+      "applies_if": {"min_workers": 5},
+      "cycle": {"type": "period", "period": "half"},
+      "basis": "중대재해 처벌 등에 관한 법률 제4조 · 같은 법 시행령 제4조제3호·제7호 등, 제5조 (반기 1회 이상)",
+      "retention": "5년 — 중대재해 처벌 등에 관한 법률 시행령 제13조",
+      "note": "안전소통 화면의 제보·조치 기록과 기록 화면의 문서 목록이 점검 근거 자료가 된다.",
+      "verified": true
+    },
+    {
+      "id": "osh_committee",
+      "name": "산업안전보건위원회 정기회의",
+      "category": "회의",
+      "doc": "산업안전보건위원회 회의록",
+      "applies_if": {"min_workers": 50, "industries": ["1차 금속 제조업"]},
+      "cycle": {"type": "period", "period": "quarter"},
+      "basis": "산업안전보건법 제24조 · 같은 법 시행령 제34조·별표 9 (1차 금속 제조업 상시근로자 50명 이상) · 제37조 (분기마다 정기회의)",
+      "retention": "2년 — 산업안전보건법 제164조제1항제2호",
+      "note": "업종별로 설치 규모 기준이 다르다.",
+      "verified": true
+    },
+    {
+      "id": "wem",
+      "name": "작업환경측정",
+      "category": "점검·검사",
+      "doc": "작업환경측정 결과표",
+      "applies_if": {"min_workers": 1, "requires": ["hazardous_agents"]},
+      "cycle": {"type": "rolling", "months": 6},
+      "follow_up": {"id": "wem_report", "name": "작업환경측정 결과 보고", "days": 30,
+                    "basis": "산업안전보건법 시행규칙 제188조 — 시료채취를 마친 날부터 30일 이내 (분석에 시간이 걸리면 30일 범위에서 연장)",
+                    "verified": true},
+      "basis": "산업안전보건법 제125조 · 같은 법 시행규칙 제190조 (6개월에 1회 이상)",
+      "retention": "5년 (고시 물질이 들어 있으면 30년) — 산업안전보건법 시행규칙 제241조제2항",
+      "note": "최근 2회 연속 노출기준 미만 등 조건이면 1년 1회로 완화. 산세 공장은 염화수소 등 측정 대상 유해인자 노출.",
+      "verified": true
+    },
+    {
+      "id": "edu_worker",
+      "name": "근로자 정기 안전보건교육",
+      "category": "교육",
+      "doc": "교육 실시 기록",
+      "applies_if": {"min_workers": 1},
+      "cycle": {"type": "period", "period": "half"},
+      "basis": "산업안전보건법 제29조 · 같은 법 시행규칙 제26조·별표 4 (사무직 외 매반기 12시간 이상)",
+      "retention": "5년 — 교육 실시 여부 반기 점검(중대재해처벌법 시행령 제5조제2항제3호)의 이행 서면으로 보관(시행령 제13조)",
+      "note": "2023년 개정으로 매분기 → 매반기.",
+      "verified": true
+    },
+    {
+      "id": "edu_supervisor",
+      "name": "관리감독자 정기교육",
+      "category": "교육",
+      "doc": "교육 실시 기록",
+      "applies_if": {"min_workers": 1},
+      "cycle": {"type": "period", "period": "year"},
+      "basis": "산업안전보건법 제29조 · 같은 법 시행규칙 제26조·별표 4 (연간 16시간 이상)",
+      "retention": "5년 — 중대재해 처벌 등에 관한 법률 시행령 제13조",
+      "verified": true
+    }
+  ],
+
+  "event": [
+    {
+      "id": "accident_report",
+      "name": "산업재해조사표 제출",
+      "category": "보고",
+      "doc": "산업재해조사표 (시행규칙 별지 제30호서식)",
+      "condition": "사망 또는 3일 이상 휴업 재해",
+      "days": 30,
+      "deadline_rule": "재해 발생일부터 1개월 이내",
+      "basis": "산업안전보건법 제57조제3항 · 같은 법 시행규칙 제73조제1항",
+      "retention": "3년 — 산업안전보건법 제164조제1항제4호",
+      "verified": true
+    },
+    {
+      "id": "serious_report",
+      "name": "중대재해 발생 보고",
+      "category": "보고",
+      "doc": "중대재해 발생 보고 (전화·팩스 등)",
+      "condition": "중대재해 (사망 등)",
+      "days": 0,
+      "deadline_rule": "지체 없이",
+      "basis": "산업안전보건법 제54조제2항 · 같은 법 시행규칙 제67조",
+      "retention": "3년 — 산업재해 기록과 같이 (산업안전보건법 제164조제1항제4호)",
+      "verified": true
+    },
+    {
+      "id": "adhoc_review",
+      "name": "수시 위험성평가",
+      "category": "문서",
+      "doc": "위험성평가 실시 결과(수시)",
+      "condition": "시스템 수시평가 제안 (위험도 12 이상 또는 중대성 4등급 위반)",
+      "days": 7,
+      "deadline_rule": "제안일부터 7일 이내 (내부 기준 — 법정 기한 아님)",
+      "basis": "사업장 위험성평가에 관한 지침 제15조제2항 (수시평가 — 정비·보수, 작업방법 변경, 산업재해 발생 등)",
+      "retention": "3년 — 산업안전보건법 시행규칙 제37조제2항",
+      "verified": true
+    },
+    {
+      "id": "corrective",
+      "name": "시정지시 조치 완료",
+      "category": "점검·검사",
+      "doc": "시정지시서 조치 결과 회신",
+      "condition": "시정지시서 발행",
+      "days": null,
+      "deadline_rule": "중대성 등급별 기한 (scales.json, 내부 기준)",
+      "basis": "내부 기준 · 중대재해 처벌 등에 관한 법률 시행령 제4조제3호 (유해·위험요인 개선 절차)",
+      "retention": "5년 — 중대재해 처벌 등에 관한 법률 시행령 제13조",
+      "verified": true
+    },
+    {
+      "id": "voice_action",
+      "name": "근로자 제보 조치",
+      "category": "점검·검사",
+      "doc": "제보 조치 결과",
+      "condition": "안전소통 제보 접수",
+      "days": 14,
+      "deadline_rule": "접수일부터 14일 이내 (내부 기준 — 법정 기한 아님)",
+      "basis": "중대재해 처벌 등에 관한 법률 시행령 제4조제7호 (의견 청취 후 개선방안 마련·이행)",
+      "retention": "5년 — 중대재해 처벌 등에 관한 법률 시행령 제13조",
+      "verified": true
+    }
+  ]
+}

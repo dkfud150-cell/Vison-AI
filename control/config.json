@@ -1,0 +1,25 @@
+{
+  "_설명": "관제 화면 설정. 사업장에 따라 달라지는 것(구역 · 신호 · 판정표 · 카메라 · 시나리오 · 부서 대응 · 시연 기본값)은 여기가 아니라 사업장 패키지에 있다.",
+
+  "package": "steel_pickling",
+  "_package": "사업장 패키지 이름 또는 폴더 경로. 이름이면 monitor_engine/packages/<이름> → 예시데이터_삭제가능/사업장패키지/<이름> 순서로 찾는다. 실제 패키지를 받으면 monitor_engine/packages/ 에 넣고 이름을 여기 적는다.",
+
+  "live": {
+    "_설명": "실시간 관제 세션의 처음 값. 화면의 '시연 제어'에서 바꿀 수 있다. 스케줄 · 영상 장면 기본값은 패키지의 dashboard.json.",
+    "start": "07:55",
+    "speed": 10,
+    "ruleset": "docgen",
+    "_ruleset": "docgen = 문서 자동화에서 위험성평가로 확정된 개정안만 켠다(실제 운영과 같다) · none = 기본 규칙 · all = 개정안 전부",
+    "auto_handoff": true,
+    "_auto_handoff": "기록할 때마다 문서 자동화로 넘긴다(집계 · 증빙 누적용). 관제 인계 화면 목록에는 숨겨진다",
+    "auto_handoff_every_s": 10
+  },
+
+  "work_types": {
+    "_설명": "작업허가서 등록 창의 '작업 종류' → 켜지는 모드의 신호 · 문서 자동화 허가서 유형(정비 · 화기). 신호 이름은 사업장 패키지 signals.json 과 같아야 한다.",
+    "대수리 사전 작업": {"signal": "ptw_issued", "ptw_type": "정비"},
+    "산세 구역 화기":   {"signal": "hot_work_permit", "ptw_type": "화기"},
+    "밀폐공간":         {"signal": "confined_permit", "ptw_type": "정비"},
+    "산세조 개방":      {"signal": "cover_open", "ptw_type": "정비"}
+  }
+}

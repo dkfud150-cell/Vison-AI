@@ -1,0 +1,17 @@
+{
+  "ptw_id": "PTW-20261012-01",
+  "type": "정비",
+  "zone": "Z8",
+  "work": "배소로 버너·내화물 정비 — 연료가스 배관 맹판 격리",
+  "start": "2026-10-12T08:00",
+  "end": "2026-10-12T17:00",
+  "supervisor": "",
+  "workers": 4,
+  "isolation_list_file": "ptw/isolation_list_Z8.csv",
+  "purge": {"medium": "질소", "minutes": 15},
+  "gas_tests": [
+    {"time": "08:40", "point": "FG-01 벤트", "line_id": "FG-01", "lel_pct": 0}
+  ],
+  "fire_watch": null,
+  "note": "확정 시연 시나리오의 작업계획서. 파일럿 버너 배관이 격리 목록에 없다."
+}

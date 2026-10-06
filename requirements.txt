@@ -1,0 +1,5 @@
+-r docgen/requirements.txt
+-r monitor_engine/requirements.txt
+fastapi>=0.110
+uvicorn>=0.27
+python-multipart

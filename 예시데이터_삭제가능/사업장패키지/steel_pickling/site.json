@@ -1,0 +1,154 @@
+{
+  "_설명": "사업장 정보 — 회사가 쓰는 파일. 구역 코드와 구역 속성(hazard = 그 구역에 있을 수 있는 가연물 · 위험원), 설비 참조 목록(배관 계통도 등)을 둔다. 규칙(rules.json)의 조건어가 여기 값을 읽는다.",
+  "site_id": "steel_pickling",
+  "name": "산세 공장 (샘플)",
+  "industry": "철강 · 1차 금속",
+  "zones": {
+    "Z1": {
+      "name": "입측"
+    },
+    "Z2": {
+      "name": "브레이커"
+    },
+    "Z3": {
+      "name": "산세조",
+      "hazard": "overpickling"
+    },
+    "Z4": {
+      "name": "린스 · 건조"
+    },
+    "Z5": {
+      "name": "출측"
+    },
+    "Z6": {
+      "name": "산 순환 · 저장",
+      "hazard": "residual_acid"
+    },
+    "Z7": {
+      "name": "흄 스크러버",
+      "hazard": "overpickling"
+    },
+    "Z8": {
+      "name": "산 재생설비(배소로)",
+      "hazard": "fuel_gas"
+    },
+    "Z9": {
+      "name": "하역장"
+    },
+    "Z10": {
+      "name": "배관 랙 · 지정 통로"
+    }
+  },
+  "references": {
+    "piping": {
+      "_설명": "배관 계통도(P&ID)를 옮긴 것. 구역마다 물린 배관. hazard 가 있으면 가연물이 흐르는 배관이다. 실제로는 설비 도면 DB 에서 받는다. Z3 · Z6 · Z10 은 가연물이 아닌 배관(hazard 없음) — 작업 전 대조(R1)에만 쓰이고 발생 축 해제 조건에는 들어가지 않는다.",
+      "Z8": [
+        {
+          "id": "FG-01",
+          "name": "주 연료가스 배관 (LNG·COG)",
+          "fluid": "연료가스",
+          "hazard": "fuel_gas"
+        },
+        {
+          "id": "CA-01",
+          "name": "연소 공기 배관",
+          "fluid": "공기",
+          "hazard": null
+        },
+        {
+          "id": "FG-02",
+          "name": "파일럿 버너 배관",
+          "fluid": "연료가스",
+          "hazard": "fuel_gas"
+        }
+      ],
+      "Z3": [
+        {
+          "id": "AC-21",
+          "name": "염산 공급 배관",
+          "fluid": "염산",
+          "hazard": null
+        },
+        {
+          "id": "ST-01",
+          "name": "스팀 배관",
+          "fluid": "스팀",
+          "hazard": null
+        },
+        {
+          "id": "RW-01",
+          "name": "세정수 배관",
+          "fluid": "물",
+          "hazard": null
+        }
+      ],
+      "Z6": [
+        {
+          "id": "AC-11",
+          "name": "폐산 유입 배관",
+          "fluid": "폐산",
+          "hazard": null
+        },
+        {
+          "id": "AC-12",
+          "name": "순환 복귀 배관",
+          "fluid": "염산",
+          "hazard": null
+        },
+        {
+          "id": "N2-01",
+          "name": "질소 퍼지 배관",
+          "fluid": "질소",
+          "hazard": null
+        },
+        {
+          "id": "DR-01",
+          "name": "드레인 배관",
+          "fluid": "폐산",
+          "hazard": null
+        }
+      ],
+      "Z10": [
+        {
+          "id": "AC-31",
+          "name": "산 이송 배관 A",
+          "fluid": "염산",
+          "hazard": null
+        },
+        {
+          "id": "AC-32",
+          "name": "산 이송 배관 B",
+          "fluid": "염산",
+          "hazard": null
+        }
+      ]
+    },
+    "equipment": {
+      "_설명": "구역마다 배관이 물린 설비 이름 — 격리 목록 대조 화면의 계통도 제목. 실제로는 설비 대장에서 받는다.",
+      "Z3": [
+        {
+          "id": "PT-2",
+          "name": "산세조 2"
+        }
+      ],
+      "Z6": [
+        {
+          "id": "TK-W",
+          "name": "폐산 탱크"
+        }
+      ],
+      "Z8": [
+        {
+          "id": "E5",
+          "name": "배소로"
+        }
+      ],
+      "Z10": [
+        {
+          "id": "RACK",
+          "name": "배관 랙 구간"
+        }
+      ]
+    }
+  }
+}

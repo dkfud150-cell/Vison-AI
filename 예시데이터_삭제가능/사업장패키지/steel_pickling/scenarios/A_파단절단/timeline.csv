@@ -1,0 +1,11 @@
+﻿time,signal,zone,target,value,source,note
+08:10,gas_test,Z3,순회 지점,0,CSV,순회 가스 측정 LEL 0%
+09:05,strip_break,Z3,,,버튼,스트립 파단 · 비상정지
+09:12,emergency_work,Z3,,,CSV,긴급작업으로 처리 · 작업계획서 없음
+09:25,overpickling,Z3,,,자동,정지 20분 경과 → 과산세
+09:28,access_fail,Z3,,,영상,측정 담당이 파단 지점에 접근하지 못함 (안전대만 지급)
+09:30,hot_work_permit,Z3,,가스절단,CSV,긴급 PTW 사후 발급
+09:30,ptw_document,Z3,,ptw_emergency.json,CSV,긴급 PTW 본문 — 측정란에 08:10 순회 값
+09:33,cover_open,Z3,,,영상,커버 개방 · 작업자 2명 진입 · 화재감시자 없음
+09:35,sparks,Z3,,,영상,절단 불꽃
+09:37,explosion,Z3,,,버튼,커버 아래 체류 수소 순간 연소

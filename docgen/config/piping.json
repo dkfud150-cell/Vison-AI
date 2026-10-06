@@ -1,0 +1,17 @@
+{
+  "_설명": "배관 계통도(P&ID)를 JSON으로 옮긴 것. 작업허가서 점검(R1)이 격리 목록과 대조하는 상대다. 실제로는 설비 도면 DB에서 읽는다.",
+  "Z8": {
+    "equipment": "배소로 (산 재생설비)",
+    "lines": [
+      {"line_id": "FG-01", "name": "주 연료가스 배관 (LNG·COG)", "fluid": "연료가스", "hazard_source": "fuel_gas"},
+      {"line_id": "CA-01", "name": "연소 공기 배관", "fluid": "공기", "hazard_source": null},
+      {"line_id": "FG-02", "name": "파일럿 버너 배관", "fluid": "연료가스", "hazard_source": "fuel_gas"}
+    ]
+  },
+  "adjacent_zones": {
+    "_설명": "동시작업 간섭 점검에 쓰는 인접 구역. 같은 구역도 인접으로 본다.",
+    "Z8": ["Z8", "Z10"],
+    "Z3": ["Z3", "Z6", "Z10"],
+    "Z6": ["Z6", "Z3", "Z10"]
+  }
+}

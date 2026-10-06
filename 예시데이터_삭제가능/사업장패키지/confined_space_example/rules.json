@@ -1,0 +1,259 @@
+{
+  "vars": {
+    "o2_min": 18,
+    "o2_valid_min": 120,
+    "vent_zones": []
+  },
+  "conditions": {
+    "o2_valid": {
+      "measured": "o2",
+      "max_age_min": "@o2_valid_min"
+    }
+  },
+  "judgments": {
+    "질식": {
+      "zones": [
+        "T1"
+      ],
+      "axes": [
+        {
+          "name": "입장",
+          "states": [
+            {
+              "state": "●",
+              "when": {
+                "any": [
+                  {
+                    "fact": "entry"
+                  },
+                  {
+                    "persons": "hazard",
+                    "op": ">=",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            {
+              "state": "○",
+              "when": true
+            }
+          ]
+        },
+        {
+          "name": "산소",
+          "states": [
+            {
+              "state": "위험",
+              "when": {
+                "measure": "o2",
+                "op": "<",
+                "value": "@o2_min",
+                "max_age_min": "@o2_valid_min"
+              }
+            },
+            {
+              "state": "정상",
+              "tone": "ok",
+              "when": {
+                "cond": "o2_valid"
+              }
+            },
+            {
+              "state": "미측정",
+              "tone": "warn",
+              "when": true
+            }
+          ]
+        },
+        {
+          "name": "환기",
+          "states": [
+            {
+              "state": "정지",
+              "when": {
+                "all": [
+                  {
+                    "zone_in": "@vent_zones"
+                  },
+                  {
+                    "not": {
+                      "fact": "fan"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "state": "가동",
+              "tone": "ok",
+              "when": {
+                "zone_in": "@vent_zones"
+              }
+            },
+            {
+              "state": "미등록",
+              "when": true
+            }
+          ]
+        },
+        {
+          "name": "감시인",
+          "states": [
+            {
+              "state": "있음",
+              "tone": "ok",
+              "when": {
+                "any": [
+                  {
+                    "fact": "watcher"
+                  },
+                  {
+                    "persons": "watch",
+                    "op": ">=",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            {
+              "state": "없음",
+              "tone": "danger",
+              "when": true
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "row": 1,
+          "level": "최고 경보",
+          "violation": "산소결핍",
+          "when": {
+            "axis": "산소",
+            "is": "위험"
+          }
+        },
+        {
+          "row": 2,
+          "level": "최고 경보",
+          "violation": "입장_측정없음",
+          "when": {
+            "all": [
+              {
+                "axis": "입장",
+                "is": "●"
+              },
+              {
+                "axis": "산소",
+                "is": "미측정"
+              }
+            ]
+          }
+        },
+        {
+          "row": 3,
+          "level": "경보",
+          "violation": "입장_환기정지",
+          "when": {
+            "all": [
+              {
+                "axis": "입장",
+                "is": "●"
+              },
+              {
+                "axis": "환기",
+                "is": "정지"
+              }
+            ]
+          }
+        },
+        {
+          "row": 4,
+          "level": "경보",
+          "violation": "감시인_부재",
+          "when": {
+            "all": [
+              {
+                "axis": "입장",
+                "is": "●"
+              },
+              {
+                "axis": "감시인",
+                "is": "없음"
+              }
+            ]
+          }
+        },
+        {
+          "row": 5,
+          "level": "주의",
+          "violation": "입장전_측정없음",
+          "when": {
+            "all": [
+              {
+                "fact": "permit"
+              },
+              {
+                "axis": "산소",
+                "is": "미측정"
+              }
+            ]
+          }
+        }
+      ],
+      "default": {
+        "row": 6,
+        "level": "정상"
+      },
+      "lower": {
+        "hold_min": 5,
+        "when": true
+      },
+      "responses": {
+        "주의": "입장 전 산소 측정",
+        "경보": "현장 방송 · 감시인 복귀 · 환기 복구",
+        "최고 경보": "즉시 퇴장 · 구조 대기"
+      },
+      "accident_prevented_at": "최고 경보"
+    }
+  },
+  "modes": {
+    "평상시": {
+      "default": true,
+      "zones": [
+        "*"
+      ]
+    },
+    "밀폐공간 작업": {
+      "when": {
+        "fact": "permit"
+      },
+      "scope": "all",
+      "zones": [
+        "T1",
+        "M1"
+      ],
+      "judge": [
+        "질식"
+      ]
+    }
+  },
+  "gates": [],
+  "rule_changes": {
+    "C1": {
+      "text": "환기 정지를 판정에 넣는다",
+      "add": {
+        "vars.vent_zones": [
+          "T1"
+        ]
+      }
+    },
+    "C2": {
+      "text": "입장 중 산소 측정 유효시간 30분 (연속 측정)",
+      "set": {
+        "vars.o2_valid_min": 30
+      }
+    }
+  }
+}

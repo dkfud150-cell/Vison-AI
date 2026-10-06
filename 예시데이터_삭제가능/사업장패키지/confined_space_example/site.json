@@ -1,0 +1,16 @@
+{
+  "_설명": "엔진 확인용 가상 예시 — 다른 업종 · 다른 위험 유형(질식)도 같은 코드로 도는지 보는 용도. 수치 미검증.",
+  "site_id": "confined_space_example",
+  "name": "선박 블록 탱크 (가상 예시)",
+  "industry": "조선",
+  "zones": {
+    "T1": {
+      "name": "이중저 탱크 내부",
+      "hazard": "o2_deficiency"
+    },
+    "M1": {
+      "name": "탱크 맨홀 입구"
+    }
+  },
+  "references": {}
+}

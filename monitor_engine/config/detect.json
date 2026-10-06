@@ -1,0 +1,92 @@
+{
+  "_설명": "시스템 기본 탐지 설정. 패키지 폴더에 detect.json 이 있으면 그 값이 이 위에 덮어써진다. 사람은 항상 본다. flame · extra 는 이름으로 엔진에 들어가 규칙의 {\"detect\": 이름} 이 된다.",
+  "person": {
+    "weights": "yolo26n.pt",
+    "fallback_weights": "yolo11n.pt",
+    "conf": 0.35,
+    "imgsz": 640,
+    "tracker": "bytetrack.yaml",
+    "device": null
+  },
+  "flame": {
+    "_설명": "backend: color = 학습 없이 색 · 밝기 · 움직임으로 불티를 찾는다(기본). yolo = 불꽃 클래스가 있는 가중치(D-Fire 로 학습한 것 등)를 models/ 에 넣고 쓴다. off = 불꽃을 보지 않고 버튼(0)으로만 넣는다.",
+    "backend": "color",
+    "yolo": {
+      "weights": "models/fire.pt",
+      "classes": [
+        "fire",
+        "flame",
+        "spark",
+        "sparks"
+      ],
+      "conf": 0.3,
+      "imgsz": 640
+    },
+    "color": {
+      "_설명": "작은 화면(폭 work_width)에서 계산한다. 따뜻한 색(H<=hue_max 또는 H>=hue_wrap_min, S>=s_min, V>=v_min — hue_max 30 은 노랑까지. 형광 연두(30~40)는 안전조끼 색이라 뺀다) 또는 흰빛(V>=white_v_min, S<=white_s_max) 이면서 앞 프레임과 달라진(motion_min) 점만 불티 후보. roi=hazard 이면 E 폴리곤 근처만 본다.",
+      "work_width": 640,
+      "v_min": 200,
+      "s_min": 60,
+      "hue_max": 30,
+      "hue_wrap_min": 165,
+      "white_v_min": 245,
+      "white_s_max": 50,
+      "motion_min": 25,
+      "min_blob_px": 2,
+      "min_blobs": 3,
+      "min_total_ratio": 0.0002,
+      "cluster_px": 25,
+      "roi": "hazard",
+      "_빼기": "노랑 · 주황 작업복과 안전모가 움직이면 옷 가장자리가 불티 후보로 잡힌다. 아래 값으로 그걸 뺀다. 0 이나 false 로 두면 그 단계를 건너뛴다.",
+      "skip_person": true,
+      "person_pad": 0.08,
+      "solid_px": 5,
+      "solid_s_min": 110,
+      "solid_v_min": 100,
+      "solid_pad": 5,
+      "hot_v_min": 250,
+      "hot_s_max": 130,
+      "hot_ratio": 0.1,
+      "white_near_warm": 4,
+      "cluster_blobs": 3,
+      "max_motion_ratio": 0.25,
+      "skip_repeat": true,
+      "_빼기_설명": "skip_person: 사람 박스(person_pad 만큼 넓혀서) 안은 후보에서 뺀다. solid_*: 채도 solid_s_min · 밝기 solid_v_min 이상인 따뜻한 색이 solid_px 보다 두껍게 뭉친 면(옷 · 안전모 · 주황 설비)과 그 둘레 solid_pad 를 뺀다 — 불티는 가늘어서 면이 되지 않는다. 면 안에 하얗게 타는 점(hot_*)이 hot_ratio 이상이면 불길로 보고 남긴다. white_near_warm: 흰빛은 따뜻한 색 이 거리 안에 있을 때만(흰 안전모 · 장갑 · 반사띠 · 조명 제외). cluster_blobs: 한 무리 안에 점이 이만큼은 있어야 불티. max_motion_ratio: 화면의 이 비율 넘게 한꺼번에 바뀌면(장면 전환 · 섬광) 그 프레임은 건너뛴다. skip_repeat: 똑같은 프레임이 반복되면 앞 결과를 쓴다."
+    },
+    "polygons": [
+      "hazard",
+      "hazard_repair"
+    ],
+    "_polygons": "이 종류의 폴리곤 안에서 N프레임 연속이어야 검출 확정"
+  },
+  "persistence": {
+    "_설명": "N프레임 연속이어야 검출 확정(오탐 억제), M프레임 연속 미검출이면 해제. 처리한 프레임 기준 — stride 를 올리면 같이 줄인다.",
+    "on_frames": 5,
+    "off_frames": 15
+  },
+  "run": {
+    "_설명": "work_width: 영상을 이 폭으로 줄여서 처리 · 표시한다(YOLO 는 어차피 640 으로 줄인다). 느리면 stride 를 2~3 으로 — 탐지를 N프레임마다 한 번.",
+    "work_width": 960,
+    "stride": 1
+  },
+  "event": {
+    "_설명": "같은 위반은 cooldown_s 안에 다시 알리지 않는다. 경보가 나면 전후 클립을 저장한다(생성 영상이 짧으면 있는 만큼만).",
+    "cooldown_s": 30,
+    "clip_pre_s": 10,
+    "clip_post_s": 10,
+    "clip_max_width": 960,
+    "save_shadow_clips": false
+  },
+  "extra": [],
+  "_extra_예시": {
+    "name": "ladder",
+    "weights": "models/ladder.pt",
+    "classes": [
+      "ladder"
+    ],
+    "conf": 0.4,
+    "polygons": [
+      "work"
+    ]
+  }
+}

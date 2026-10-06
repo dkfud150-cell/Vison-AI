@@ -1,0 +1,66 @@
+{
+  "_설명": "기능 확인용 사업장 정보(예시). docgen/config/site_profile.json 위에 덮어 읽는다 — 이 폴더를 지우면 시연 날짜 · 샘플 사고 · 마지막 실시일이 같이 사라지고 진짜 시각으로 돈다. accidents 의 event_ids 는 그 사고와 이어진 관제 이벤트(예시 이벤트 번호)다.",
+  "site_name": "산세 공장 (샘플)",
+  "demo_today": "2026-10-12",
+  "last_done": {
+    "ra_regular": "2025-10-30",
+    "sapa_half": "2026-04-10",
+    "osh_committee": "2026-07-15",
+    "wem": "2026-04-17",
+    "wem_report": "2026-05-12",
+    "edu_worker": "2026-06-25",
+    "edu_supervisor": "2025-12-10"
+  },
+  "accidents": [
+    {
+      "id": "ACC-2026-003",
+      "date": "2026-09-10",
+      "time": "14:30",
+      "zone": "Z6",
+      "summary": "산 순환 펌프 정비 중 손가락 끼임",
+      "lost_days": 4,
+      "injured": 1,
+      "fatal": false,
+      "event_ids": []
+    },
+    {
+      "id": "ACC-2026-004",
+      "date": "2026-09-22",
+      "time": "10:05",
+      "zone": "Z3",
+      "summary": "산세조 커버 개방 중 산 비말로 팔 화상",
+      "lost_days": 5,
+      "injured": 1,
+      "fatal": false,
+      "event_ids": []
+    },
+    {
+      "id": "ACC-2026-005",
+      "date": "2026-10-02",
+      "time": "16:10",
+      "zone": "Z1",
+      "summary": "코일 장입 중 발목 염좌",
+      "lost_days": 1,
+      "injured": 1,
+      "fatal": false,
+      "event_ids": []
+    },
+    {
+      "id": "ACC-2026-006",
+      "date": "2026-10-12",
+      "time": "09:22",
+      "zone": "Z8",
+      "summary": "배소로 정비 중 잔류 연료가스 폭발 (시연 1막 재현)",
+      "lost_days": 30,
+      "injured": 2,
+      "fatal": false,
+      "event_ids": [
+        "EV-1044"
+      ],
+      "ptw_ids": [
+        "PTW-20261012-01",
+        "PTW-20261012-02"
+      ]
+    }
+  ]
+}

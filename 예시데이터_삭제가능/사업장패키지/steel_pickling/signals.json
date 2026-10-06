@@ -1,0 +1,54 @@
+{
+  "_설명": "신호 사전 — 이 사업장의 PLC · PTW · 센서 · 버튼 신호가 각각 무엇을 하는지. 엔진은 do 의 종류만 안다. on/off = 켜고 끄는 상태(사실), event = 일어난 일, measure = 측정값, mark = 대상에 표시(맹판 설치 완료 등), document = 파일 입력(격리 목록 · 작업허가서), accident = 사고. 여기 없는 신호가 들어오면 같은 이름의 event 로 기록한다.",
+  "signals": {
+    "ptw_issued":      {"label": "작업허가 발급", "do": "on",  "fact": "ptw"},
+    "ptw_closed":      {"label": "작업허가 종료", "do": "off", "fact": "ptw"},
+    "hot_work_permit": {"label": "화기 허가",     "do": "on",  "fact": "hot_work_permit"},
+    "hot_work_end":    {"label": "화기 종료",     "do": "off", "fact": "hot_work_permit"},
+
+    "valve_closed":    {"label": "밸브 잠금",       "do": "mark", "fact": "valve_closed"},
+    "vent":            {"label": "벤트 · 압력 해소", "do": "mark", "fact": "vented"},
+    "blind_installed": {"label": "맹판 설치 완료",   "do": "mark", "fact": "blind"},
+    "purge_start":     {"label": "퍼지 시작", "do": "on",  "fact": "purge"},
+    "purge_end":       {"label": "퍼지 종료", "do": "off", "fact": "purge"},
+
+    "gas_test": {
+      "label": "가스 측정", "do": "measure", "fact": "gas", "unit": "%LEL",
+      "_reset": "측정 뒤 해제 조건이 맞으면, 그 전에 확인된 가연물 방출(release)을 지운다",
+      "reset": {"events": ["release"], "if": {"cond": "clearance"}}
+    },
+    "lel":           {"label": "LEL 센서",  "do": "measure", "fact": "lel_sensor", "unit": "%LEL"},
+    "exhaust_stop":  {"label": "배기 정지", "do": "on",  "fact": "exhaust_stopped"},
+    "exhaust_start": {"label": "배기 복구", "do": "off", "fact": "exhaust_stopped"},
+
+    "flange_open":  {"label": "플랜지 해체 · 잔류 가스 방출", "do": "event", "fact": "release", "attrs_from": ["zone", "ref:piping"]},
+    "seat_leak":    {"label": "밸브 시트 누설",              "do": "event", "fact": "release", "attrs_from": ["zone", "ref:piping"]},
+    "acid_charge":  {"label": "산 투입",   "do": "event", "fact": "release", "attrs": {"hazard": "acid_charge"}},
+    "overpickling": {"label": "과산세",    "do": "event", "fact": "release", "attrs_from": ["zone"]},
+    "rinse_water":  {"label": "세정수 투입", "do": "event", "fact": "release", "attrs": {"hazard": "rinse_water"}},
+    "acid_leak":    {"label": "누액",      "do": "event", "fact": "release", "attrs": {"hazard": "residual_acid"}},
+
+    "sparks":      {"label": "점화원 수동 입력", "do": "on",  "fact": "ignition_manual"},
+    "sparks_stop": {"label": "점화원 종료",     "do": "off", "fact": "ignition_manual"},
+
+    "isolation_list": {"label": "격리 목록 입력",   "do": "document", "fact": "isolation_list"},
+    "ptw_document":   {"label": "작업허가서 입력", "do": "document", "fact": "ptw_doc"},
+
+    "strip_break":    {"label": "스트립 파단 · 비상정지", "do": [{"do": "on", "fact": "line_stopped"}, {"do": "event", "fact": "strip_break"}]},
+    "line_restart":   {"label": "라인 재기동",   "do": "off", "fact": "line_stopped"},
+    "emergency_work": {"label": "긴급작업 처리", "do": "on",  "fact": "emergency_work"},
+    "access_fail":    {"label": "측정 지점 접근 실패", "do": "event", "fact": "access_fail"},
+    "cover_open":     {"label": "산세조 커버 개방", "do": "on",  "fact": "cover_open"},
+    "cover_close":    {"label": "산세조 커버 닫힘", "do": "off", "fact": "cover_open"},
+    "confined_permit": {"label": "밀폐공간 작업허가", "do": "on",  "fact": "confined_permit"},
+    "confined_end":    {"label": "밀폐공간 작업 종료", "do": "off", "fact": "confined_permit"},
+    "safety_shower":   {"label": "비상샤워 작동", "do": "on",  "fact": "safety_shower"},
+    "shower_end":      {"label": "비상샤워 종료", "do": "off", "fact": "safety_shower"},
+    "tanker_arrive":   {"label": "탱크로리 정차", "do": "on",  "fact": "tanker"},
+    "tanker_leave":    {"label": "탱크로리 출발", "do": "off", "fact": "tanker"},
+    "heat_index_31":   {"label": "체감온도 31℃ 이상", "do": "on",  "fact": "heat"},
+    "heat_index_ok":   {"label": "체감온도 정상",     "do": "off", "fact": "heat"},
+
+    "explosion": {"label": "폭발 · 연소", "do": "accident"}
+  }
+}

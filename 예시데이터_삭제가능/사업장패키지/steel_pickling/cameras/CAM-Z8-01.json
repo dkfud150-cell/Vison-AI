@@ -1,0 +1,19 @@
+{
+  "_설명": "카메라 한 대의 구역 설정. 좌표는 화면 비율(0~1)이라 해상도가 달라도 그대로 쓴다. 영상을 바꾸면 calibrate.py 로 다시 찍는다. type: hazard = E 폴리곤(점화원을 보는 곳), work = 작업 구역(인원 · 화재감시자를 세는 곳), restricted = 모드에 따라 출입이 막히는 곳(Z10 배관 랙 하부). 지금 값은 make_test_video.py 합성 영상에 맞춘 자리표시다.",
+  "camera_id": "CAM-Z8-01",
+  "zone": "Z8",
+  "polygons": [
+    {"name": "E5", "type": "hazard", "zone": "Z8", "label": "E5 배소로 버너 · 플랜지",
+     "space": "image", "points": [[0.18, 0.40], [0.52, 0.40], [0.56, 0.78], [0.14, 0.78]]},
+    {"name": "Z8-work", "type": "work", "zone": "Z8", "label": "Z8 정비 작업 구역",
+     "space": "image", "points": [[0.02, 0.30], [0.64, 0.30], [0.66, 0.99], [0.01, 0.99]]},
+    {"name": "Z10", "type": "restricted", "zone": "Z10", "label": "Z10 배관 랙 하부",
+     "space": "image", "points": [[0.72, 0.30], [0.99, 0.30], [0.99, 0.99], [0.70, 0.99]]}
+  ],
+  "floor_calib": null,
+  "_floor_calib_예시": {
+    "_설명": "바닥 네 점(화면 비율)과 그 점의 실제 바닥 좌표(m). 있으면 space='floor' 폴리곤을 m 단위로 그릴 수 있다. calibrate.py --floor 로 찍는다.",
+    "image_pts": [[0.10, 0.95], [0.90, 0.95], [0.75, 0.40], [0.25, 0.40]],
+    "floor_pts": [[0, 0], [8, 0], [8, 10], [0, 10]]
+  }
+}

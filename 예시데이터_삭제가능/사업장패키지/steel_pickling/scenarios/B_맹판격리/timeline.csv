@@ -1,0 +1,14 @@
+﻿time,signal,zone,target,value,source,note
+08:00,ptw_issued,Z8,,정비,CSV,배소로 정비 PTW 발급 (PTW-20261012-01)
+08:00,valve_closed,Z8,FG-01,,CSV,연료가스 주 밸브 잠금
+08:05,isolation_list,Z8,,isolation_list_Z8.csv,CSV,격리 목록 입력 — 배관 2건
+08:15,vent,Z8,FG-01,,버튼,주 배관 벤트로 압력 해소 · 압력계 0
+08:20,purge_start,Z8,,질소,버튼,질소 퍼지 시작
+08:35,purge_end,Z8,,,버튼,퍼지 종료 (15분 · 완료 기준 없음)
+08:40,gas_test,Z8,FG-01,0,CSV,가스 측정 — 주 배관 벤트 1지점 LEL 0%
+08:45,exhaust_stop,Z8,,,버튼,정비를 위해 배기 정지
+09:00,hot_work_permit,Z8,,그라인더,CSV,인접 구역 내화물 철거 화기 허가 (PTW-20261012-02)
+09:10,flange_open,Z8,FG-01,,버튼,주 배관 플랜지 해체 · 맹판 삽입 착수 — 잔류 가스 방출
+09:12,seat_leak,Z8,FG-02,,버튼,파일럿 배관 밸브 하류 가압 잔류 · 시트 누설
+09:15,sparks,Z8,,,영상,인접 구역 내화물 철거 그라인더 불티
+09:22,explosion,Z8,,,버튼,잔류 연료가스 폭발

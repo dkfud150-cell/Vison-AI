@@ -1,0 +1,748 @@
+{
+  "_설명": "규칙 — 회사가 쓰는 파일. vars(값) · conditions(이름 붙인 조건) · judgments(위험 유형별 판정표) · modes(트리거 → 모드) · gates(작업 전 게이트) · rule_changes(개정안). 조건은 엔진이 아는 '조건어'를 조합해 쓴다 — 목록은 README 의 '조건어' 절. '@이름' 은 vars 값을 가리킨다.",
+  "name": "산세 공장 관제 규칙",
+  "version": 1,
+  "vars": {
+    "_설명": "개정안(rule_changes)은 대부분 이 값을 바꾼다. 수치는 초기값 — LEL 25% 만 고시 근거(가스누출감지경보기 설치 지침 제6조).",
+    "hazard_sources": [
+      "acid_charge",
+      "overpickling",
+      "rinse_water",
+      "residual_acid"
+    ],
+    "accum_zones": [
+      "Z3",
+      "Z6",
+      "Z7"
+    ],
+    "lel_top": 25,
+    "lel_warn": 10,
+    "lel_clear_max": 5,
+    "gas_valid_min": 120,
+    "measure_invalidated_by": [],
+    "purge_min_minutes": 0,
+    "all_points_required": false,
+    "valve_only_blocks_clear": false,
+    "require_isolation_list": false,
+    "emergency_ptw_min_fields": false
+  },
+  "conditions": {
+    "gas_valid": {
+      "measured": "gas",
+      "max_age_min": "@gas_valid_min",
+      "invalidated_by": "@measure_invalidated_by"
+    },
+    "clearance": {
+      "all": [
+        {
+          "label": "측정값 기준 이하",
+          "measured": "gas",
+          "max": "@lel_clear_max",
+          "max_age_min": "@gas_valid_min",
+          "invalidated_by": "@measure_invalidated_by"
+        },
+        {
+          "label": "퍼지 치환 시간",
+          "any": [
+            {
+              "var": "purge_min_minutes",
+              "is": 0
+            },
+            {
+              "duration": "purge",
+              "op": ">=",
+              "value": "@purge_min_minutes"
+            }
+          ]
+        },
+        {
+          "label": "전 지점 측정",
+          "any": [
+            {
+              "var": "all_points_required",
+              "is": false
+            },
+            {
+              "covers": {
+                "measure": "gas",
+                "max": "@lel_clear_max",
+                "max_age_min": "@gas_valid_min",
+                "points": {
+                  "ref": "piping",
+                  "field": "id",
+                  "where": "hazard"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "label": "밸브 단독 격리 없음",
+          "any": [
+            {
+              "var": "valve_only_blocks_clear",
+              "is": false
+            },
+            {
+              "not": {
+                "unmarked": {
+                  "mark": "blind",
+                  "points": {
+                    "ref": "piping",
+                    "field": "id",
+                    "where": "hazard"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "judgments": {
+    "폭발": {
+      "label": "화재 · 폭발 — 발생 · 축적 · 점화원",
+      "zones": [
+        "Z3",
+        "Z6",
+        "Z7",
+        "Z8"
+      ],
+      "axes": [
+        {
+          "name": "발생",
+          "states": [
+            {
+              "state": "확인",
+              "tone": "danger",
+              "when": {
+                "event": "release",
+                "attr": {
+                  "hazard": "@hazard_sources"
+                }
+              }
+            },
+            {
+              "state": "해제",
+              "tone": "ok",
+              "when": {
+                "cond": "clearance"
+              }
+            },
+            {
+              "state": "가능",
+              "tone": "warn",
+              "when": {
+                "zone_attr": "hazard",
+                "in": "@hazard_sources"
+              }
+            },
+            {
+              "state": "미등록",
+              "tone": "mute",
+              "when": true
+            }
+          ]
+        },
+        {
+          "name": "축적",
+          "states": [
+            {
+              "state": "●",
+              "tone": "danger",
+              "when": {
+                "fact": "exhaust_stopped",
+                "zones": "@accum_zones"
+              }
+            },
+            {
+              "state": "○",
+              "tone": "mute",
+              "when": true
+            }
+          ]
+        },
+        {
+          "name": "점화원",
+          "states": [
+            {
+              "state": "●",
+              "tone": "danger",
+              "when": {
+                "any": [
+                  {
+                    "detect": "flame"
+                  },
+                  {
+                    "fact": "ignition_manual"
+                  }
+                ]
+              }
+            },
+            {
+              "state": "○",
+              "tone": "mute",
+              "when": true
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "row": 1,
+          "level": "최고 경보",
+          "violation": "LEL_상한_초과",
+          "when": {
+            "measure": "lel_sensor",
+            "op": ">=",
+            "value": "@lel_top"
+          },
+          "label": "LEL 25% 이상"
+        },
+        {
+          "row": 2,
+          "level": "최고 경보",
+          "violation": "점화원_축적",
+          "when": {
+            "all": [
+              {
+                "axis": "점화원",
+                "is": "●"
+              },
+              {
+                "any": [
+                  {
+                    "axis": "축적",
+                    "is": "●"
+                  },
+                  {
+                    "measure": "lel_sensor",
+                    "op": ">=",
+                    "value": "@lel_warn"
+                  }
+                ]
+              },
+              {
+                "axis": "발생",
+                "in": [
+                  "확인",
+                  "가능"
+                ]
+              }
+            ]
+          },
+          "label": "점화원 + 축적(또는 LEL 10%), 발생 해제 아님"
+        },
+        {
+          "row": 3,
+          "level": "최고 경보",
+          "violation": "점화원_무허가",
+          "when": {
+            "all": [
+              {
+                "axis": "점화원",
+                "is": "●"
+              },
+              {
+                "not": {
+                  "fact": "hot_work_permit"
+                }
+              }
+            ]
+          },
+          "label": "허가 없는 점화원"
+        },
+        {
+          "row": 4,
+          "level": "경보",
+          "violation": "점화원_가스측정_없음",
+          "when": {
+            "all": [
+              {
+                "axis": "점화원",
+                "is": "●"
+              },
+              {
+                "not": {
+                  "cond": "gas_valid"
+                }
+              }
+            ]
+          },
+          "label": "점화원 + 가스 측정 없음 · 만료"
+        },
+        {
+          "row": 5,
+          "level": "경보",
+          "violation": "발생_축적",
+          "when": {
+            "all": [
+              {
+                "axis": "발생",
+                "is": "확인"
+              },
+              {
+                "axis": "축적",
+                "is": "●"
+              }
+            ]
+          },
+          "label": "발생 확인 + 축적"
+        },
+        {
+          "row": 6,
+          "level": "경보",
+          "violation": "LEL_경고",
+          "when": {
+            "measure": "lel_sensor",
+            "op": ">=",
+            "value": "@lel_warn"
+          },
+          "label": "LEL 10% 이상 (점화원 없음)"
+        },
+        {
+          "row": 7,
+          "level": "주의",
+          "violation": "축적",
+          "when": {
+            "all": [
+              {
+                "axis": "축적",
+                "is": "●"
+              },
+              {
+                "axis": "점화원",
+                "is": "○"
+              }
+            ]
+          },
+          "label": "축적 단독"
+        },
+        {
+          "row": 7,
+          "level": "주의",
+          "violation": "점화원_허가작업",
+          "when": {
+            "axis": "점화원",
+            "is": "●"
+          },
+          "label": "허가 · 측정이 끝난 점화원"
+        }
+      ],
+      "default": {
+        "row": 8,
+        "level": "정상",
+        "label": "그 외 (모드가 꺼져 있으면 무음 기록)"
+      },
+      "lower": {
+        "_설명": "내려갈 때는 바로 내리지 않는다 — 배기 복구 · 재측정 · 5분 경과가 모두 맞으면 한 단계씩",
+        "hold_min": 5,
+        "when": {
+          "all": [
+            {
+              "not": {
+                "axis": "축적",
+                "is": "●"
+              }
+            },
+            {
+              "measured": "gas",
+              "after": "raise"
+            }
+          ]
+        }
+      },
+      "presence": {
+        "any": [
+          {
+            "persons": "all",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "all": [
+              {
+                "video": false
+              },
+              {
+                "any": [
+                  {
+                    "fact": "ptw"
+                  },
+                  {
+                    "fact": "hot_work_permit"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "responses": {
+        "주의": {
+          "present": "화재감시자 확인 · 재측정 타이머",
+          "absent": "관제 화면 표시"
+        },
+        "경보": {
+          "present": "점화원 작업 금지 · 현장 방송",
+          "absent": "가스 투입 중지 권고 · 배기 복구 요청"
+        },
+        "최고 경보": {
+          "present": "즉시 작업중지 · 대피 · 인원 카운트",
+          "absent": "점화원 차단 · 펌프 정지 인터록"
+        }
+      },
+      "accident_prevented_at": "경보"
+    }
+  },
+  "modes": {
+    "평상시": {
+      "status": "시연",
+      "default": true,
+      "zones": [
+        "*"
+      ],
+      "ppe": [
+        "안전모",
+        "안전화"
+      ],
+      "notes": [
+        "배관 구역 통행은 무음 기록만"
+      ]
+    },
+    "대수리 사전 작업": {
+      "status": "시연",
+      "when": {
+        "fact": "ptw"
+      },
+      "scope": "all",
+      "zones": [
+        "Z8",
+        "Z10"
+      ],
+      "judge": [
+        "폭발"
+      ],
+      "ppe": [
+        "안전모",
+        "안전화"
+      ],
+      "checks": [
+        {
+          "type": "no_entry",
+          "polygons": [
+            "restricted"
+          ],
+          "violation": "배관구역_진입",
+          "level": "경보",
+          "dwell_s": 1.0,
+          "shadow_when_off": true
+        },
+        {
+          "type": "min_persons",
+          "polygons": [
+            "work"
+          ],
+          "min": 2,
+          "violation": "2인1조_미준수",
+          "level": "주의",
+          "dwell_s": 5.0
+        }
+      ],
+      "notes": [
+        "배관 구역 진입 시 경보",
+        "2인 1조",
+        "격리 목록 로드 + 계통도 대조"
+      ]
+    },
+    "산세 구역 화기": {
+      "status": "시연",
+      "when": {
+        "any": [
+          {
+            "fact": "hot_work_permit"
+          },
+          {
+            "detect": "flame",
+            "hold_min": 30
+          }
+        ]
+      },
+      "scope": "zone",
+      "zones": [
+        "Z3",
+        "Z6",
+        "Z8"
+      ],
+      "judge": [
+        "폭발"
+      ],
+      "ppe": [
+        "안전모",
+        "안전화"
+      ],
+      "checks": [
+        {
+          "type": "min_persons",
+          "polygons": [
+            "work",
+            "hazard"
+          ],
+          "min": 2,
+          "when": {
+            "detect": "flame"
+          },
+          "violation": "화재감시자_부재",
+          "level": "경보",
+          "dwell_s": 3.0
+        }
+      ],
+      "notes": [
+        "가스 측정 · 배기 가동 선행 확인",
+        "화재감시자 1명 배치",
+        "화기 종료 후 30분 잔불 감시"
+      ]
+    },
+    "통판": {
+      "status": "정의만",
+      "when": {
+        "fact": "line_stopped"
+      },
+      "scope": "all",
+      "zones": [
+        "Z3"
+      ],
+      "judge": [
+        "폭발"
+      ],
+      "checks": [
+        {
+          "type": "max_persons",
+          "polygons": [
+            "work"
+          ],
+          "max": 3,
+          "violation": "인원_초과",
+          "level": "주의",
+          "dwell_s": 5.0
+        }
+      ],
+      "notes": [
+        "Z3 인원 상한",
+        "인칭 중 롤 주변 손 금지",
+        "재기동 전 인원 0"
+      ]
+    },
+    "산세조 개방": {
+      "status": "정의만",
+      "when": {
+        "fact": "cover_open"
+      },
+      "scope": "zone",
+      "zones": [
+        "Z3"
+      ],
+      "notes": [
+        "개구부 체류 노출 추정",
+        "스크러버 정지 시 작업중지"
+      ]
+    },
+    "밀폐공간": {
+      "status": "정의만",
+      "when": {
+        "fact": "confined_permit"
+      },
+      "scope": "zone",
+      "zones": [
+        "Z3",
+        "Z6"
+      ],
+      "checks": [
+        {
+          "type": "min_persons",
+          "polygons": [
+            "work"
+          ],
+          "min": 2,
+          "violation": "감시인_부재",
+          "level": "경보",
+          "dwell_s": 5.0
+        }
+      ],
+      "notes": [
+        "격리 → 측정 → 감시인 → 입장 순서",
+        "입 · 퇴장 카운트"
+      ]
+    },
+    "산 접촉 응급": {
+      "status": "정의만",
+      "when": {
+        "fact": "safety_shower"
+      },
+      "scope": "zone",
+      "zones": [
+        "Z3",
+        "Z6",
+        "Z9"
+      ],
+      "notes": [
+        "세척 시간 타이머",
+        "응급 담당 호출"
+      ]
+    },
+    "하역": {
+      "status": "정의만",
+      "when": {
+        "fact": "tanker"
+      },
+      "scope": "zone",
+      "zones": [
+        "Z9"
+      ],
+      "notes": [
+        "입회자 상주",
+        "반경 무관자 금지"
+      ]
+    },
+    "내산복 고열": {
+      "status": "정의만",
+      "when": {
+        "fact": "heat"
+      },
+      "scope": "all",
+      "zones": [
+        "Z3",
+        "Z6",
+        "Z8",
+        "Z9"
+      ],
+      "notes": [
+        "휴식 주기 앞당김",
+        "쓰러짐 감지"
+      ]
+    }
+  },
+  "gates": [
+    {
+      "id": "isolation_cross_check",
+      "label": "격리 목록 ↔ 배관 계통도",
+      "type": "missing_in_document",
+      "on_document": "isolation_list",
+      "enabled": "@require_isolation_list",
+      "document_field": "line_id",
+      "ref": "piping",
+      "ref_field": "id",
+      "ref_label": "name",
+      "violation": "격리목록_누락",
+      "response": "작업 시작 보류 · 격리 목록 보완 후 재입력"
+    },
+    {
+      "id": "emergency_ptw_fields",
+      "label": "긴급 작업허가서 최소 필드",
+      "type": "required_fields",
+      "on_document": "ptw_doc",
+      "enabled": "@emergency_ptw_min_fields",
+      "fields": [
+        "측정시각",
+        "측정자",
+        "화재감시자"
+      ],
+      "time_after_event": {
+        "field": "측정시각",
+        "event": "strip_break"
+      },
+      "violation": "작업허가서_필드_미충족",
+      "response": "허가 보류 · 정지 이후 재측정 · 화재감시자 지정"
+    }
+  ],
+  "feedback": {
+    "_설명": "피드백 루프(짧은 루프 · 자동 조정) 설정 — 관제 화면(control/feedback.py)이 읽는다. 전부 초기값. 통합 문서 6장 · 피드백 루프 설계.",
+    "mode": "auto",
+    "severe": {
+      "severity": 4,
+      "act": "immediate"
+    },
+    "spike": {
+      "ratio": 2.0,
+      "min_count": 3,
+      "window_h": 24,
+      "baseline_days": 14
+    },
+    "new": {
+      "baseline_days": 14
+    },
+    "absolute": {
+      "weekly_count": 10,
+      "risk_score": 12
+    },
+    "drop": {
+      "ratio": 0.3,
+      "min_baseline": 5
+    },
+    "false_positive": {
+      "ratio": 0.3,
+      "min_count": 5
+    },
+    "auto_actions": {
+      "alert_level": {
+        "max_up": 2
+      },
+      "enable_zone_rule": true,
+      "notify_manager": true
+    },
+    "expire_h": 72,
+    "promote": {
+      "count": 3,
+      "within_days": 14
+    }
+  },
+  "rule_changes": {
+    "_설명": "위험성평가에서 사람이 확정하면 켜지는 개정안. set = 값 바꾸기, add = 목록에 더하기. 경로는 점(.)으로 잇는다. R1~R4 = 시나리오 B, A1~A2 = 시나리오 A.",
+    "R1": {
+      "text": "격리 목록을 시스템 입력으로 받고 배관 계통도와 대조해, 목록에 없는 연결을 작업 전에 지적한다",
+      "set": {
+        "vars.require_isolation_list": true
+      }
+    },
+    "R2": {
+      "text": "밸브만으로 격리된 배관은 발생 해제로 인정하지 않는다",
+      "set": {
+        "vars.valve_only_blocks_clear": true
+      }
+    },
+    "R3": {
+      "text": "연료가스 계통을 발생 축 신호원에 추가한다 (Z8 배기도 축적 신호원으로)",
+      "add": {
+        "vars.hazard_sources": [
+          "fuel_gas"
+        ],
+        "vars.accum_zones": [
+          "Z8"
+        ]
+      }
+    },
+    "R4": {
+      "text": "퍼지 완료 판정 = 치환 시간 + 측정 지점 + 기준값. 모든 지점에서 재야 해제",
+      "set": {
+        "vars.purge_min_minutes": 30,
+        "vars.all_points_required": true
+      }
+    },
+    "A1": {
+      "text": "측정 유효성을 시간이 아니라 상태에 묶는다 — 정지 · 과산세 이전에 잰 값은 무효",
+      "add": {
+        "vars.measure_invalidated_by": [
+          "strip_break",
+          "release"
+        ]
+      }
+    },
+    "A2": {
+      "text": "긴급 작업허가서 최소 필드 — 정지 후 측정값 · 측정자 · 화재감시자. 하나라도 비면 허가 보류",
+      "set": {
+        "vars.emergency_ptw_min_fields": true
+      }
+    }
+  }
+}

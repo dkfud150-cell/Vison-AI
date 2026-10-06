@@ -1,0 +1,9 @@
+﻿time,signal,zone,target,value,source,note
+13:00,confined_permit,T1,,,CSV,밀폐공간 작업허가
+13:05,o2_test,T1,맨홀 입구,20.9,CSV,입구에서만 측정
+13:10,fan_start,T1,,,버튼,송풍기 가동
+13:15,watcher_on,T1,,,버튼,감시인 배치
+13:20,entry,T1,,,영상,작업자 입장
+13:40,fan_stop,T1,,,버튼,송풍기 정지 (용접기와 전원 공유)
+13:45,watcher_off,T1,,,영상,감시인 자리 비움
+13:52,collapse,T1,,,버튼,작업자 쓰러짐

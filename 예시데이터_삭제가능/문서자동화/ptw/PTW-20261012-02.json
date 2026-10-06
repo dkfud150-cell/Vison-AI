@@ -1,0 +1,17 @@
+{
+  "ptw_id": "PTW-20261012-02",
+  "type": "화기",
+  "zone": "Z8",
+  "work": "배소로 인접 구역 내화물 철거 — 그라인더 연삭",
+  "start": "2026-10-12T09:00",
+  "end": "2026-10-12T12:00",
+  "supervisor": "정비2팀 반장",
+  "workers": 2,
+  "isolation_list_file": null,
+  "purge": null,
+  "gas_tests": [
+    {"time": "08:55", "point": "연삭 작업 위치", "line_id": null, "lel_pct": 0}
+  ],
+  "fire_watch": null,
+  "note": "같은 구역에서 맹판 격리와 동시에 진행된 화기 작업."
+}

@@ -1,0 +1,53 @@
+{
+  "_설명": "시연 후보에서 탈락한 A 를 같은 엔진으로 돌리는 예. 개정안 A1 · A2 가 JSON 두 줄로 들어간다.",
+  "name": "A · 스트립 파단 긴급 절단",
+  "basis": "시연 후보 문서 2장 — 반응식 + 탱크 사례 + OPL 긴급작업 지적을 조립한 근거",
+  "date": "2026-10-12",
+  "zone": "Z3",
+  "table": "폭발",
+  "timeline": "timeline.csv",
+  "variants": {
+    "개정 전": {
+      "changes": [],
+      "expect": [
+        {
+          "at": "09:25",
+          "axis": {
+            "발생": "확인"
+          }
+        },
+        {
+          "at": "09:35",
+          "level": "주의",
+          "row": 7
+        },
+        {
+          "at": "09:37",
+          "accident": true
+        }
+      ]
+    },
+    "개정 후": {
+      "changes": [
+        "A1",
+        "A2"
+      ],
+      "expect": [
+        {
+          "at": "09:30",
+          "gate": "emergency_ptw_fields"
+        },
+        {
+          "at": "09:35",
+          "level": "경보",
+          "row": 4
+        },
+        {
+          "at": "09:37",
+          "accident": false
+        }
+      ]
+    }
+  },
+  "scenes": []
+}
